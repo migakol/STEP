@@ -26,14 +26,16 @@ from utils.tube_utils import flatten_tubes, valid_tubes, compute_box_iou
 from utils.vis_utils import overlay_image
 from data.customize import CustomizedDataset, detection_collate, WIDTH, HEIGHT
 from data.augmentations import BaseTransform
-
+from input_options import BaseOptions
+from pathlib import Path
 
 
 def main():
 
     ################## Customize your configuratons here ###################
+    opt = BaseOptions().parse()
 
-    checkpoint_path = 'pretrained/ava_step.pth'
+    checkpoint_path = os.path.join(Path(__file__).parent, 'pretrained/ava_step.pth')
     if os.path.isfile(checkpoint_path):
         print ("Loading pretrain model from %s" % checkpoint_path)
         map_location = 'cuda:0'
@@ -43,7 +45,7 @@ def main():
         raise ValueError("Pretrain model not found!", checkpoint_path)
 
     # TODO: Set data_root to the customized input dataset
-    args.data_root = '/datasets/demo/frames/'
+    args.data_root = opt.input_folder  # '/datasets/demo/frames/'
     args.save_root = os.path.join(os.path.dirname(args.data_root), 'results/')
     if not os.path.isdir(args.save_root):
         os.makedirs(args.save_root)
@@ -223,6 +225,7 @@ def main():
             t0 = time.time()
                     
     fout.close()
+    print('Finished STEP')
 
 if __name__ == "__main__":
     main()
